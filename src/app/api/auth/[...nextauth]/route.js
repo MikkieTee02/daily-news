@@ -41,17 +41,18 @@ export const authOptions = {
 							email,
 							role,
 							image,
-						}),
-					});
-					const data = await res.json();
+						})
+					})
+					const data = await res.json()
 
 					if (res.ok) {
 						user.mongoId = data.data._id;
 						user.role = data.data.role;
-						return user;
+						return user
 					}
+					return true;
 				} catch (error) {
-					throw new Error(error);
+					throw new Error(error)
 				}
 			}
 			return null;
@@ -63,15 +64,16 @@ export const authOptions = {
 			}
 			return token;
 		},
+
 		async session({ session, token }) {
 			if (session?.user) {
 				session.user.mongoId = token.mongoId;
 				session.user.role = token.role;
 			}
-			return session;
-		},
-	},
-};
+			return session
+		}
+	}
+}
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
