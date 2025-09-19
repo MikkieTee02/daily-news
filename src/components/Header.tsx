@@ -143,12 +143,18 @@ export default function Header() {
                   <span className="hidden md:block">{session.user?.name}</span>
                 </div>
                 <Button
-                className="bg-red-500"
+                  className="bg-red-500"
                   variant="ghost"
                   onClick={() => signOut({ callbackUrl: "/" })}
                 >
                   Sign Out
                 </Button>
+
+                <Link href="/dashboard">
+                  <Button className="bg-primary" variant="ghost">
+                    Dashboard
+                  </Button>
+                </Link>
               </>
             ) : (
               <Dialog>
