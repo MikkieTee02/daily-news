@@ -2,37 +2,19 @@ import Link from "next/link";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { Facebook, Instagram, Twitter, Youtube, Send } from "lucide-react";
-import { categories } from "../lib/data";
 import { Separator } from "./ui/separator";
+import { infoLinks, companyLinks, socialIcons, businessHours } from "../lib/footerData";
+import { getCategories } from "../lib/api"; // fetch from DB
+import { Category } from "../types";
 
-export default function Footer() {
-  const infoLinks = [
-    { href: "#", label: "Privacy Policy" },
-    { href: "#", label: "Terms & Conditions" },
-    { href: "#", label: "Site Map" },
-    { href: "#", label: "FAQ" },
-    { href: "#", label: "Locations" },
-    { href: "#", label: "Breaking News" },
-    { href: "#", label: "User Area" },
-  ];
-
-  const companyLinks = [
-    { href: "#", label: "About" },
-    { href: "#", label: "Contact" },
-    { href: "#", label: "Our Staff" },
-    { href: "#", label: "Help Center" },
-    { href: "#", label: "Advertise" },
-    { href: "#", label: "Subscription" },
-    { href: "#", label: "Startups" },
-  ];
-
-  const socialIcons = [
-    { icon: Facebook, label: "Facebook" },
-    { icon: Twitter, label: "Twitter" },
-    { icon: Instagram, label: "Instagram" },
-    { icon: Youtube, label: "YouTube" },
-    { icon: Send, label: "Send" },
-  ];
+export default async function Footer() {
+  // Fetch categories dynamically from API (DB)
+  let categories: Category[] = [];
+  try {
+    categories = await getCategories();
+  } catch (error) {
+    console.error("Failed to load categories:", error);
+  }
 
   return (
     <footer className="bg-foreground text-background mt-12">
@@ -64,32 +46,44 @@ export default function Footer() {
             <h3 className="font-headline text-lg font-bold mb-4">
               Business Hours
             </h3>
-            <p className="text-muted-foreground text-sm">
-              Monday - Friday: 08:00 - 20:00
-            </p>
-            <p className="text-muted-foreground text-sm mb-4">
-              Saturday - Sunday: 09 - 14:00
-            </p>
-            <div className="flex space-x-2 justify-center sm:justify-start">
-              {socialIcons.map((social) => (
-                <a
-                  key={social.label}
-                  href="#"
-                  aria-label={social.label}
-                  className="w-8 h-8 flex items-center justify-center rounded-sm bg-card/10 text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                >
-                  <social.icon className="h-4 w-4" />
-                </a>
-              ))}
+            {businessHours.map((entry) => (
+              <p key={entry.day} className="text-muted-foreground text-sm">
+                {entry.day}: {entry.hours}
+              </p>
+            ))}
+            <div className="flex space-x-2 justify-center sm:justify-start mt-4">
+              {socialIcons.map((social) => {
+                const Icon =
+                  social.name === "Facebook"
+                    ? Facebook
+                    : social.name === "Twitter"
+                    ? Twitter
+                    : social.name === "Instagram"
+                    ? Instagram
+                    : social.name === "YouTube"
+                    ? Youtube
+                    : Send;
+
+                return (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    aria-label={social.name}
+                    className="w-8 h-8 flex items-center justify-center rounded-sm bg-card/10 text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                  >
+                    <Icon className="h-4 w-4" />
+                  </a>
+                );
+              })}
             </div>
           </div>
 
-          {/* Categories */}
+          {/* Categories (from DB) */}
           <div>
             <h3 className="font-headline text-lg font-bold mb-4">Categories</h3>
             <ul className="space-y-2">
               {categories.slice(0, 7).map((category) => (
-                <li key={category.slug}>
+                <li key={category._id}>
                   <Link
                     href={`/category/${category.slug}`}
                     className="text-sm text-muted-foreground hover:text-primary transition-colors"
@@ -103,9 +97,7 @@ export default function Footer() {
 
           {/* Information */}
           <div>
-            <h3 className="font-headline text-lg font-bold mb-4">
-              Information
-            </h3>
+            <h3 className="font-headline text-lg font-bold mb-4">Information</h3>
             <ul className="space-y-2">
               {infoLinks.map((link) => (
                 <li key={link.label}>
@@ -139,12 +131,11 @@ export default function Footer() {
         </div>
 
         <Separator className="bg-border/20" />
+
         {/* Logo Section */}
-        <div className=" text-center  pt-8 lg:pt-0 ">
+        <div className="text-center pt-8 lg:pt-0">
           <h2 className="text-4xl font-headline font-bold">Daily News</h2>
-          <p className="text-muted-foreground text-sm mt-1">
-            All voices matter
-          </p>
+          <p className="text-muted-foreground text-sm mt-1">All voices matter</p>
         </div>
         <Separator className="bg-border/20" />
 

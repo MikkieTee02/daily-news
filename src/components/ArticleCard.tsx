@@ -64,7 +64,7 @@ export function ArticleCard({ article, layout = 'default', className, priority =
             <div className="cursor-pointer">{children}</div>
           </DialogTrigger>
           <DialogContent className="max-w-3xl p-0 border-0">
-            <VideoPlayer src="https://www.w3schools.com/html/mov_bbb.mp4" title={article.title} />
+            <VideoPlayer src="/placeholder.mp4" title={article.title} />
           </DialogContent>
         </Dialog>
       )
@@ -73,6 +73,10 @@ export function ArticleCard({ article, layout = 'default', className, priority =
   };
 
   const categories = Array.isArray(article.category) ? article.category : [article.category];
+
+  // Handle both string categories (static data) and Category objects (API)
+  const getCategorySlug = (cat: any) => typeof cat === 'string' ? cat.toLowerCase() : cat.slug;
+  const getCategoryName = (cat: any) => typeof cat === 'string' ? cat : cat.name;
   
   if (isHero) {
     return (
@@ -101,7 +105,7 @@ export function ArticleCard({ article, layout = 'default', className, priority =
       <div className={cn('group relative text-white', className)}>
         <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
           <Badge variant="default" className="rounded-sm bg-green-600 hover:bg-green-700 font-bold text-xs uppercase">
-            {categories[0]}
+            {getCategoryName(categories[0])}
           </Badge>
           <div className="flex items-center">
             <Clock className="h-4 w-4 mr-1.5" />
@@ -131,7 +135,7 @@ export function ArticleCard({ article, layout = 'default', className, priority =
             />
             <div className="absolute bottom-2 left-2">
                 <Badge variant={badgeVariant} className="rounded-sm font-bold text-xs uppercase">
-                    {categories[0]}
+                    {getCategoryName(categories[0])}
                 </Badge>
             </div>
           </Link>
@@ -261,9 +265,9 @@ export function ArticleCard({ article, layout = 'default', className, priority =
                     </Badge>
                 </div>
                  <div className="mb-3">
-                    <Link href={`/category/${categories[0].toLowerCase()}`}>
+                    <Link href={`/category/${getCategorySlug(categories[0])}`}>
                     <Badge variant={badgeVariant} className="rounded-sm font-bold text-xs uppercase !bg-transparent !text-white border border-white">
-                        {categories[0]}
+                        {getCategoryName(categories[0])}
                     </Badge>
                     </Link>
                 </div>
@@ -298,9 +302,9 @@ export function ArticleCard({ article, layout = 'default', className, priority =
         <div className="flex-1">
           <div className="mb-2 flex flex-wrap gap-2">
             {categories.map(cat => (
-              <Link key={cat} href={`/category/${cat.toLowerCase()}`}>
+              <Link key={getCategoryName(cat)} href={`/category/${getCategorySlug(cat)}`}>
                 <Badge variant='outline' className="rounded-sm font-bold text-xs uppercase !border-0 !text-primary !p-0">
-                  {cat}
+                  {getCategoryName(cat)}
                 </Badge>
               </Link>
             ))}
@@ -338,7 +342,7 @@ export function ArticleCard({ article, layout = 'default', className, priority =
                   </VideoWrapper>
                 </h3>
                 <p className="mt-2 text-xs text-muted-foreground">
-                    {article.date} / {categories.join(', ')}
+                    {article.date} / {categories.map(cat => getCategoryName(cat)).join(', ')}
                 </p>
             </div>
         </div>
@@ -360,7 +364,7 @@ export function ArticleCard({ article, layout = 'default', className, priority =
             />
             <div className="absolute bottom-2 left-2">
                 <Badge variant={badgeVariant} className="rounded-sm font-bold text-xs uppercase">
-                    {categories[0]}
+                    {getCategoryName(categories[0])}
                 </Badge>
             </div>
           </Link>
@@ -391,12 +395,12 @@ export function ArticleCard({ article, layout = 'default', className, priority =
         </div>
         <CardContent className="p-6">
           <div className="mb-3">
-            <Link href={`/category/${categories[0].toLowerCase()}`}>
-              <Badge variant={badgeVariant} className="rounded-sm font-bold text-xs uppercase">
-                {categories[0]}
-              </Badge>
-            </Link>
-          </div>
+             <Link href={`/category/${getCategorySlug(categories[0])}`}>
+               <Badge variant={badgeVariant} className="rounded-sm font-bold text-xs uppercase">
+                 {getCategoryName(categories[0])}
+               </Badge>
+             </Link>
+           </div>
           <h3 className={titleClass}>
             <Link href={`/article/${article.slug}`}>{article.title}</Link>
           </h3>
@@ -446,12 +450,12 @@ export function ArticleCard({ article, layout = 'default', className, priority =
           })}
         >
           <div className="mb-2">
-            <Link href={`/category/${categories[0].toLowerCase()}`}>
-              <Badge variant={badgeVariant} className="rounded-sm text-white bg-primary hover:bg-primary/80 font-bold text-xs uppercase">
-                {categories[0]}
-              </Badge>
-            </Link>
-          </div>
+             <Link href={`/category/${getCategorySlug(categories[0])}`}>
+               <Badge variant={badgeVariant} className="rounded-sm text-white bg-primary hover:bg-primary/80 font-bold text-xs uppercase">
+                 {getCategoryName(categories[0])}
+               </Badge>
+             </Link>
+           </div>
           <h3 className={titleClass}>
             <Link href={`/article/${article.slug}`}>{article.title}</Link>
           </h3>
