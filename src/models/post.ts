@@ -12,17 +12,13 @@ const postSchema = new Schema({
         required:true,
     },
 
-    date:{
-        type: Date,
-        default: Date.now,
-    },
 
     imageUrl:{
         type:String,
         required:true,
     },
 
-})
+}, {timestamps:true});
 
 export default mongoose.models.post || mongoose.model("post", postSchema);
 
