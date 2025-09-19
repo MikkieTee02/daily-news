@@ -1,57 +1,58 @@
-// seed.ts
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 import dotenv from "dotenv";
-import { articles, categories } from "../src/lib/data.ts"; 
-import type { Article, Category } from "../src/types"; // adjust path
+import { articles, categories } from "../src/lib/data.ts";
+import Article from "../src/models/Article";
+import Category from "../src/models/Category";
 
 dotenv.config();
-
-// Category schema
-const categorySchema = new Schema<Category>({
-  name: { type: String, required: true },
-  slug: { type: String, required: true },
-});
-
-// Article schema
-const articleSchema = new Schema<Article>({
-  id: { type: String, required: true },
-  slug: { type: String, required: true },
-  title: String,
-  excerpt: String,
-  content: String,
-  imageUrl: String,
-  category: Schema.Types.Mixed, // can be string | string[]
-  author: {
-    name: String,
-    avatarUrl: String,
-  },
-  date: String,
-});
-
-// Models
-const CategoryModel = mongoose.model<Category>("Category", categorySchema);
-const ArticleModel = mongoose.model<Article>("Article", articleSchema);
 
 async function seedDatabase() {
   try {
     await mongoose.connect(process.env.MONGODB_URI as string);
-
     console.log("Connected to MongoDB Atlas");
 
-    // clear existing
-    await CategoryModel.deleteMany({} as any);
-    await ArticleModel.deleteMany({});
+    // Clear existing data
+    await Category.deleteMany({});
+    await Article.deleteMany({});
 
-    // insert fresh data
-    await CategoryModel.insertMany(categories);
-    await ArticleModel.insertMany(articles);
+    // Insert categories
+    const insertedCategories = await Category.insertMany(categories);
 
-    console.log("Data seeded successfully!");
+    // Create a name -> ObjectId map
+    const categoryMap = insertedCategories.reduce((map, category) => {
+      map[category.name as string] = category._id;
+      return map;
+    }, {} as Record<string, mongoose.Types.ObjectId>);
+
+    // Map articles' category strings to ObjectId references
+      const articlesWithRefs = articles.map((article) => {
+      let categoryIds: mongoose.Types.ObjectId[] = [];
+
+      if (Array.isArray(article.category)) {
+        categoryIds = article.category
+          .map((slug) => categoryMap[slug as string])
+          .filter(Boolean);
+      } else if (typeof article.category === "string") {
+        const id = categoryMap[article.category as string];
+        if (id) categoryIds = [id];
+      }
+
+      return {
+        ...article,
+        category: categoryIds, 
+      };
+    });
+
+    // Insert articles
+    await Article.insertMany(articlesWithRefs);
+
+    console.log("Data seeded successfully with relationships!");
   } catch (err) {
-    console.error(" Error seeding database:", err);
+    console.error("Error seeding database:", err);
   } finally {
     await mongoose.disconnect();
   }
 }
 
 seedDatabase();
+
