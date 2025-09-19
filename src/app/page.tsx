@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getArticles, getArticlesByCategory } from "../lib/data";
+import { getArticles, getArticlesByCategory } from "../lib/api";
 import { ArticleCard } from "../components/ArticleCard";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
@@ -41,7 +41,7 @@ export default async function Home() {
               fill
               className="object-cover"
               priority
-              data-ai-hint="news background"
+              
             />
             <div className="absolute inset-0 bg-black/50" />
             <div className="relative flex flex-col justify-end h-full p-4 sm:p-8 md:p-12">
