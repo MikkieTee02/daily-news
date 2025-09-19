@@ -1,5 +1,5 @@
 
-export type Category =
+export type CategoryName =
   | 'Technology'
   | 'Science'
   | 'Business'
@@ -11,6 +11,14 @@ export type Category =
   | 'Travel'
   | 'About'
   | 'Contact';
+
+export interface Category {
+  _id: string;
+  name: CategoryName;
+  slug: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 export interface Author {
   name: string;
@@ -24,7 +32,7 @@ export interface Article {
   excerpt: string;
   content: string;
   imageUrl: string;
-  category: Category | Category[];
+  category: CategoryName | CategoryName[] | Category | Category[];
   author: Author;
   date: string;
 }
