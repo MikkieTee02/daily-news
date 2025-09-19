@@ -1,8 +1,8 @@
 
 
-import type { Category, Article } from "../types";
+import type { CategoryName, Article } from "../types";
 
-const articles: Article[] = [
+export const articles: Article[] = [
   {
     id: '1',
     slug: 'ai-revolution-in-healthcare',
@@ -223,7 +223,7 @@ const articles: Article[] = [
   
 ];
 
-export const categories: { name: Category, slug: string }[] = [
+export const categories: { name: CategoryName, slug: string }[] = [
     { name: 'Culture', slug: 'culture' },
     { name: 'Economy', slug: 'economy' },
     { name: 'Politics', slug: 'politics' },
@@ -257,8 +257,8 @@ export async function getArticlesByCategory(categorySlug: string): Promise<Artic
 
   return articles.filter(article => {
     if (Array.isArray(article.category)) {
-      return article.category.some(c => c.toLowerCase() === lowercaseCategoryName);
+      return article.category.some(c => typeof c === 'string' ? c.toLowerCase() === lowercaseCategoryName : c.name.toLowerCase() === lowercaseCategoryName);
     }
-    return article.category.toLowerCase() === lowercaseCategoryName;
+    return typeof article.category === 'string' ? article.category.toLowerCase() === lowercaseCategoryName : article.category.name.toLowerCase() === lowercaseCategoryName;
   });
 }
